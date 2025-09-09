@@ -10,11 +10,11 @@ const questionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description: {
+    content: {
         type: String,
         required: true
     },
-    category: {
+    community: {
         type: String,
         required: true
     },
@@ -23,8 +23,7 @@ const questionSchema = new mongoose.Schema({
         required: true
     },
     whoCanAnswer: {
-        type: [String],
-        required: true
+        type: [String]
     },
     askAnonymously: {
         type: Boolean,
