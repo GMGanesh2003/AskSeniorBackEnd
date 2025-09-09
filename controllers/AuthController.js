@@ -63,6 +63,10 @@ const registerUser = async (req, res) => {
     
     const { email, username, role, regNo, currentYear, branchOfStudy, graduationYear } = req.body;
 
+    if (!/^[a-zA-Z0-9._%+-]+@(vitapstudent\.ac\.in|vitap\.ac\.in)$/.test(email)) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'use university mail id' });
+    }
+
     try {
         const existingUser = await User.findOne({
             $or: [
@@ -70,6 +74,8 @@ const registerUser = async (req, res) => {
                 { username: username }
             ]
         });
+        console.log("existingUser : ", existingUser);
+        
         if (existingUser) {
             return res.status(StatusCodes.CONFLICT).json({ error: 'Username or email already in use' });
         }
