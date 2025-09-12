@@ -2,7 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 const User = require("./../models/UserModel");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
-const {sendActivationEmail, sendForgotPasswordEmail} = require('../lib/Email');
+const { sendActivationEmail, sendForgotPasswordEmail } = require('../lib/Email');
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -32,8 +32,7 @@ const login = async (req, res) => {
         { expiresIn: '6h' }
     );
 
-
-    res.cookie('authToken', token, { httpOnly: true, secure: false, maxAge: 3600000 });
+    res.cookie('authToken', token, { httpOnly: true, secure: true, sameSite: 'none', partitioned: true, maxAge: 3600000, path: "/" });
     res.json({ message: 'Logged in successfully' });
 
 };
@@ -60,7 +59,7 @@ const logout = (req, res) => {
 
 const registerUser = async (req, res) => {
     console.log(req.body);
-    
+
     const { email, username, role, regNo, currentYear, branchOfStudy, graduationYear } = req.body;
 
     if (!/^[a-zA-Z0-9._%+-]+@(vitapstudent\.ac\.in|vitap\.ac\.in)$/.test(email)) {
@@ -75,38 +74,38 @@ const registerUser = async (req, res) => {
             ]
         });
         console.log("existingUser : ", existingUser);
-        
+
         if (existingUser) {
             return res.status(StatusCodes.CONFLICT).json({ error: 'Username or email already in use' });
         }
 
-        if("STUDENT" === role) {
+        if ("STUDENT" === role) {
             console.log(regNo, "  ", currentYear, "  ", branchOfStudy);
-            
-            if(!regNo || !currentYear || !branchOfStudy) {
+
+            if (!regNo || !currentYear || !branchOfStudy) {
                 return res
-                        .status(StatusCodes.BAD_REQUEST)
-                        .json({
-                            error: "For creating student account registration number, current year and branch of study are required"
-                        })
+                    .status(StatusCodes.BAD_REQUEST)
+                    .json({
+                        error: "For creating student account registration number, current year and branch of study are required"
+                    })
             }
         }
-        else if("ALUMNI" === role) {
-            if( !graduationYear || !branchOfStudy) {
+        else if ("ALUMNI" === role) {
+            if (!graduationYear || !branchOfStudy) {
                 return res
-                        .status(StatusCodes.BAD_REQUEST)
-                        .json({
-                            error: "For creating alumni account graduation year and branch of study are required"
-                        })
+                    .status(StatusCodes.BAD_REQUEST)
+                    .json({
+                        error: "For creating alumni account graduation year and branch of study are required"
+                    })
             }
         }
         else {
-            if(!branchOfStudy) {
+            if (!branchOfStudy) {
                 return res
-                        .status(StatusCodes.BAD_REQUEST)
-                        .json({
-                            error: "For creating faculty account branch of study are required"
-                        })
+                    .status(StatusCodes.BAD_REQUEST)
+                    .json({
+                        error: "For creating faculty account branch of study are required"
+                    })
             }
         }
 
@@ -143,8 +142,8 @@ const resendActivationMail = async (req, res) => {
         return res.status(StatusCodes.NOT_FOUND).json({ error: `user not found with email : ${email}` });
     }
 
-    if(user.enabled) {
-        return res.status(StatusCodes.OK).json({ message: `user with email (${email}) already activated` });        
+    if (user.enabled) {
+        return res.status(StatusCodes.OK).json({ message: `user with email (${email}) already activated` });
     }
 
     const baseUrl = `${req.protocol}://${req.get('host')}`;
