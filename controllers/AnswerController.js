@@ -32,7 +32,7 @@ const answerQuestion = async (req, res) => {
             success: true,
             answer: {
                 ...answer.toObject(),
-                userVoteType: null,
+                userVote: null,
                 hasUserLiked: false
             }
         });
@@ -100,7 +100,7 @@ const getAnswers = async (req, res) => {
                     updatedAt: 1,
                     'author.username': 1,
                     'author._id': 1,
-                    userVoteType: userId ? { $arrayElemAt: ['$userVote.voteType', 0] } : null
+                    userVote: userId ? { $arrayElemAt: ['$userVote.voteType', 0] } : null
                 }
             },
             { $sort: { isAccepted: -1, totalScore: -1, createdAt: 1 } },

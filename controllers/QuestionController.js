@@ -174,9 +174,7 @@ const getQuestionWithStatus = async (req, res) => {
         ];
 
         // If user is authenticated, add their vote information
-        if (userId) {
-            console.log("user avalible");
-            
+        if (userId) {            
             pipeline.push({
                 $lookup: {
                     from: 'votes',
@@ -207,9 +205,12 @@ const getQuestionWithStatus = async (req, res) => {
                     downvotes: 1,
                     totalScore: 1,
                     createdAt: 1,
+                    community: 1,
+                    tags: 1,
+                    answersCount: 1,
                     'author.username': 1,
                     'author._id': 1,
-                    userVoteType: userId ? { $arrayElemAt: ['$userVote.voteType', 0] } : null
+                    userVote: userId ? { $arrayElemAt: ['$userVote.voteType', 0] } : null
                 }
             },
             { $sort: { totalScore: -1, createdAt: -1 } },
